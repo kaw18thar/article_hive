@@ -25,7 +25,7 @@ col1 = Collection(name="Spring Collection")
 session.add(col1)
 session.commit()
 
-art1 = ArticleCollection(name="Fagaa Is ٍSprouting Rapidly This Season",
+art1 = ArticleCollection(name="Fagaa Is Sprouting Rapidly This Season",
                          description="The delicious vigetable is back like it had never did since a very long time",
 						 text="Expert believe this season is the most abundant season in terms of vegitables. This is shown clearly in the large spread of faga plant all over the peninsula",
 						 collection=col1)

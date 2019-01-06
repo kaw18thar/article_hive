@@ -1,7 +1,7 @@
 
 import os
 import sys
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, UnicodeText
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -23,7 +23,7 @@ class ArticleCollection(Base):
     name = Column(String(350), nullable=False)
     id = Column(Integer, primary_key=True)
     description = Column(String(250))
-    date = Column(DateTime, default=func.now())
+    date = Column( DateTime('now') )#, default=datetime.datetime.utcnow
     text = Column(UnicodeText())
     collection_id = Column(Integer, ForeignKey('collection.id'))
     collection = relationship(Collection)
@@ -43,7 +43,7 @@ class Comments(Base):
     name = Column(String(80), nullable=False)
     id = Column(Integer, primary_key=True)
     text = Column(UnicodeText())
-    date = Column(DateTime, default=func.now())
+    date = Column(DateTime('now'))
     article_id = Column(Integer, ForeignKey('article_item.id'))
     collection = relationship(ArticleCollection)
 
