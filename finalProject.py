@@ -7,7 +7,7 @@ from database_setup import Base, Collection, ArticleCollection, Comments
 
 app = Flask(__name__)
 
-engine = create_engine('sqlite:///restaurantmenu.db?check_same_thread=false')
+engine = create_engine('sqlite:///collectionsarticles.db?check_same_thread=false')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
@@ -19,7 +19,8 @@ session = DBSession()
 @app.route('/')
 @app.route('/collections/')
 def DefaultCollections():
-    return ("This is the default route of all collections")
+    collections = session.query(Collection).group_by(Collection.name).all()
+    return render_template('collections.html', collections=collections)
 
 
 # viewing a collection of articles

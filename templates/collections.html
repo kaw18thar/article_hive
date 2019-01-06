@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Article Hive Collections
+        </title>    
+    </head>
+    <body>
+        <div class="pane">
+            <a href="#" class="link">add new collection</a>
+            {% for c in collections %}
+            <p class="item" >
+                <a href="#">{{ c.name }}</a>
+            </p>
+            
+            {% endfor %}
+
+        </div>
+    </body>
+</html>
