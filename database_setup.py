@@ -1,4 +1,4 @@
-
+import datetime
 import os
 import sys
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, UnicodeText
@@ -23,7 +23,7 @@ class ArticleCollection(Base):
     name = Column(String(350), nullable=False)
     id = Column(Integer, primary_key=True)
     description = Column(String(250))
-    date = Column( DateTime('now') )#, default=datetime.datetime.utcnow
+    date = Column( String(80), default=datetime.datetime.now().strftime("%y-%m-%d %H:%M"))
     text = Column(UnicodeText())
     collection_id = Column(Integer, ForeignKey('collection.id'))
     collection = relationship(Collection)
@@ -43,7 +43,7 @@ class Comments(Base):
     name = Column(String(80), nullable=False)
     id = Column(Integer, primary_key=True)
     text = Column(UnicodeText())
-    date = Column(DateTime('now'))
+    date = Column( String(80), default=datetime.datetime.now().strftime("%Y-%M-%D %H:%M"))
     article_id = Column(Integer, ForeignKey('article_item.id'))
     collection = relationship(ArticleCollection)
 

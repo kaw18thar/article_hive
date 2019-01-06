@@ -28,8 +28,13 @@ def DefaultCollections():
 @app.route('/collections/<int:collection_id>/')
 @app.route('/collections/<int:collection_id>/list/')
 def collectionList(collection_id):
-    return ("Articles of  collection no {collection}").format(
-        collection=collection_id)
+    collection = session.query(Collection).filter_by(
+                                                     id
+                                                     =collection_id).one()
+    articles = session.query(ArticleCollection).filter_by(
+                                              collection_id=
+                                              collection_id)
+    return render_template('collectionList.html', collection=collection, articles=articles)
 
 # creating new collection
 

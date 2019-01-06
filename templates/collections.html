@@ -4,13 +4,17 @@
         <title>
             Article Hive Collections
         </title>    
+        <link rel=stylesheet type=text/css href='{{url_for('static', filename='style.css')}}'>
     </head>
     <body>
         <div class="pane">
-            <a href="#" class="link">add new collection</a>
+            <h1 class="header">Collection Hive</h1>
+            <a href="{{url_for('newCollection')}}" class="link">add new collection</a>
             {% for c in collections %}
             <p class="item" >
-                <a href="#">{{ c.name }}</a>
+                <a href="{{url_for('collectionList', collection_id= c.id )}}">{{ c.name }}</a>
+                <a href="{{url_for('editCollection', collection_id= c.id )}}" class="citem"> edit </a>
+                <a href="{{url_for('deleteCollection', collection_id= c.id )}}" class="citem"> delete </a>
             </p>
             
             {% endfor %}

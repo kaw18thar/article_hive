@@ -1,0 +1,32 @@
+html{
+    background-image: url('full-bloom.png');
+    background-repeat: repeat;
+}
+a{
+    color: steelblue;
+    text-decoration-line: none;
+}
+.link{
+    color: rgb(28, 133, 133);
+}
+.header{
+    color: darkslategray;
+}
+.pane{
+
+    border: dashed grey 1pt;
+    border-radius: 5vw;
+    font: sans-serif;
+    text-align: center;
+    height: 95vh;
+}
+
+.citem{
+    color: dimgrey;
+   
+}
+
+.dim{
+    color: lightslategray;
+    font-weight: 200;
+}
