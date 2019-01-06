@@ -29,4 +29,6 @@ a{
 .dim{
     color: lightslategray;
     font-weight: 200;
+    font-size: 0.8em;
+    font-style: oblique;
 }
