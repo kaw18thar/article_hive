@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Deleting Collection {{coll.name}} 
+        </title>
+        <link rel=stylesheet type=text/css href='{{url_for('static', filename='style.css')}}'>
+    </head>
+    <body>
+        <div class="pane">
+            <h1 class="header">Collection Deletion</h1>
+            <form action="{{url_for('deleteCollection',collection_id=collection_id)}}" method="POST">
+                <p class="item">Are you sure you want to delete {{coll.name}}?</p>
+                <button type="submit" class="submit">delete</button><button type="button"><a class="link" href="{{url_for('DefaultCollections')}}">cancel</a></button>
+
+            </form>
+            
+        </div>
+    </body>
+</html>

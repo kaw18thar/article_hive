@@ -39,39 +39,82 @@ def collectionList(collection_id):
 # creating new collection
 
 
-@app.route('/collections/new')
+@app.route('/collections/new', methods=['GET', 'POST'])
 def newCollection():
-    return ("PAge for creating new collection")
+    if request.method == 'POST':
+        newi = Collection(name=request.form['name'])
+        session.add(newi)
+        session.commit()
+        flash("new collection created!")
+        return redirect(url_for('DefaultCollections'))
+    else:
+        return render_template('newcollection.html')
 
 
 # editing the name of a collection
 
-@app.route('/collections/<int:collection_id>/edit')
+@app.route('/collections/<int:collection_id>/edit', methods=['GET', 'POST'])
 def editCollection(collection_id):
-    return ("edit collection no {collection}").format(collection=collection_id)
+    itemToedit = session.query(Collection).filter_by(id=collection_id).one()
+    if request.method == 'POST':
+        itemToedit.name = request.form['name']
+        session.add(itemToedit)
+        session.commit()
+        flash("collection name edited!")
+        return redirect(url_for('DefaultCollections'))
+    else:
+        return render_template('editcollection.html', collection_id=collection_id, coll=itemToedit)
 
 # deleting a collection
 
 
-@app.route('/collections/<int:collection_id>/delete')
+@app.route('/collections/<int:collection_id>/delete', methods=['GET', 'POST'])
 def deleteCollection(collection_id):
-    return ('delete collection  {collection}').format(collection=collection_id)
+    itemTodelete = session.query(Collection).filter_by(id=collection_id).one()
+    if request.method == 'POST':
+        session.delete(itemTodelete)
+        session.commit()
+        flash("collection deleted!")
+        return redirect(url_for('DefaultCollections'))
+    else:
+        return render_template('deletecollection.html', collection_id=collection_id, coll=itemTodelete)
 
 # adding new article to collecton no collection_id
 
 
-@app.route('/collections/<int:collection_id>/new')
+@app.route('/collections/<int:collection_id>/new', methods=['GET', 'POST'])
 def newArticle(collection_id):
-    return ("new article in collection {collection}").format(
-        collection=collection_id)
+    if request.method == 'POST':
+        newarticle = ArticleCollection(name=request.form['name'],
+                                     description=request.form['description'],
+                                     text=request.form['text'],
+                                     collection_id=collection_id)
+        session.add(newarticle)
+        session.commit()
+        flash("new article added!")
+        return redirect(url_for('collectionList', collection_id=collection_id))
+    else:
+        return render_template("newarticle.html", collection_id=collection_id)
 
 # editing an article
 
 
-@app.route('/collections/<int:collection_id>/<int:article_id>/edit')
+@app.route('/collections/<int:collection_id>/<int:article_id>/edit', methods=['GET', 'POST'])
 def editArticle(collection_id, article_id):
-    return ("edit article {article} in collection {collection}").format(
-        article=article_id, collection=collection_id)
+    itemToedit = session.query(ArticleCollection).filter_by(id=article_id).one()
+    if request.method == 'POST':
+        itemToedit.name = request.form['name']
+        itemToedit.description = request.form['description']
+        itemToedit.text = request.form['text']
+        session.add(itemToedit)
+        session.commit()
+        flash("item edited!")
+        return redirect(url_for('collectionList', collection_id=collection_id))
+
+    else:
+        return render_template('editarticle.html',
+                               collection_id=collection_id,
+                               article_id=article_id, art=itemToedit)
 
 # deleting an article
 

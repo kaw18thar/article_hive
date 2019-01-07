@@ -23,13 +23,16 @@ class ArticleCollection(Base):
     name = Column(String(350), nullable=False)
     id = Column(Integer, primary_key=True)
     description = Column(String(250))
-    date = Column( String(80), default=datetime.datetime.now().strftime("%y-%m-%d %H:%M"))
+    date = Column(
+        String(80),
+        default=datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S"))
     text = Column(UnicodeText())
     collection_id = Column(Integer, ForeignKey('collection.id'))
     collection = relationship(Collection)
+
     @property
     def serialize(self):
-        #returns obhect data in easily serilizable format
+        # returns obhect data in easily serilizable format
         return {
             'name': self.name,
             'description': self.description,
@@ -37,18 +40,22 @@ class ArticleCollection(Base):
             'text': self.text
         }
 
+
 class Comments(Base):
     __tablename__ = 'comments'
 
     name = Column(String(80), nullable=False)
     id = Column(Integer, primary_key=True)
     text = Column(UnicodeText())
-    date = Column( String(80), default=datetime.datetime.now().strftime("%Y-%M-%D %H:%M"))
+    date = Column(
+        String(80),
+        default=datetime.datetime.now().strftime("%Y-%M-%D %H:%M"))
     article_id = Column(Integer, ForeignKey('article_item.id'))
     collection = relationship(ArticleCollection)
 
 
-engine = create_engine('sqlite:///collectionsarticles.db?check_same_thread=false')
+engine = create_engine(
+    'sqlite:///collectionsarticles.db?check_same_thread=false')
 
 
 Base.metadata.create_all(engine)

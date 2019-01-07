@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Add A New Article
+        </title>
+        <link rel=stylesheet type=text/css href='{{url_for('static', filename='style.css')}}'>
+    </head>
+    <body>
+        <div class="pane">
+            <h1 class="header">Add a new article</h1>
+            <form action="{{url_for('newArticle', collection_id=collection_id)}}"  method="POST">
+                <p class="item"> 
+                    <p class="item">Name: </p>
+                    <input size="43"  name="name"> <br>
+                    <p class="item">Description: </p>
+                        <input size="43" name="description"><br>
+                    <p class="item"> Text: </p>
+                    <textarea rows="10" cols="40" name="text"></textarea > <br>
+                    <button class='submit' type="submit">add</button> 
+                </p>
+            </form>
+            <a class="link" href="{{url_for('collectionList', collection_id=collection_id)}}">cancel and back to collection </a>
+        </div>
+    </body>
+</html>
