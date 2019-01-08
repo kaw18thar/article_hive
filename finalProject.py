@@ -109,7 +109,7 @@ def editArticle(collection_id, article_id):
         session.add(itemToedit)
         session.commit()
         flash("item edited!")
-        return redirect(url_for('collectionList', collection_id=collection_id))
+        return redirect(url_for('viewArticle', collection_id=collection_id, article_id=article_id))
 
     else:
         return render_template('editarticle.html',
@@ -119,19 +119,34 @@ def editArticle(collection_id, article_id):
 # deleting an article
 
 
-@app.route('/collections/<int:collection_id>/<int:article_id>/delete')
+@app.route('/collections/<int:collection_id>/<int:article_id>/delete', methods=['GET', 'POST'])
 def deleteArticle(collection_id, article_id):
-    return ("delete article {article} in collection {collection}").format(
-        article=article_id, collection=collection_id)
+    itemTodelete = session.query(ArticleCollection).filter_by(id=article_id).one()
+    if request.method == 'POST':
+        session.delete(itemTodelete)
+        session.commit()
+        flash("article deleted!")
+        return redirect(url_for('collectionList', collection_id=collection_id))
+    else:
+        return render_template('deletearticle.html', collection_id=collection_id, article_id=article_id, art=itemTodelete)
 
 # viewing an article
 
 
-@app.route('/collections/<int:collection_id>/<int:article_id>/')
-@app.route('/collections/<int:collection_id>/<int:article_id>/view')
+@app.route('/collections/<int:collection_id>/<int:article_id>/', methods=['GET', 'POST'])
+@app.route('/collections/<int:collection_id>/<int:article_id>/view', methods=['GET', 'POST'])
 def viewArticle(collection_id, article_id):
-    return ("view article {article} in collection {collection}").format(
-        article=article_id, collection=collection_id)
+    item = session.query(ArticleCollection).filter_by(id=article_id).one()
+    collection = session.query(Collection).filter_by(id=collection_id).one()
+    if request.method == 'POST':
+        session.delete(itemTodelete)
+        session.commit()
+        flash("article deleted!")
+        return redirect(url_for('collectionList', collection_id=collection_id))
+    else:
+        return render_template('viewarticle.html', collection_id=collection_id, coll=collection, article_id=article_id, art=item)
+        
+
 
 
 if __name__ == '__main__':

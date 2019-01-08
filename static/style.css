@@ -8,6 +8,11 @@ a{
 }
 .item{
     color: steelblue;
+
+}
+article{
+    text-align: center;
+    
 }
 .link{
     color: rgb(28, 133, 133);

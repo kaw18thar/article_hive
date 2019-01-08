@@ -8,16 +8,20 @@
         <div class="pane">
             <h1 class="header">{{collection.name}}</h1>
             <a href="{{url_for('newArticle', collection_id=collection.id)}}" class="link">add new article</a><br>
-
+            {% if articles %}
             {% for a in articles %}
             <p class="item" >
 
                 <a href="{{url_for('viewArticle', collection_id= collection.id, article_id=a.id )}}">{{ a.name }}</a>
                 <label class="dim">{{ a.date }}</label>
-                <a href="{{url_for('editArticle', collection_id= collection.id, article_id=a.id )}}" class="citem"> edit </a>
-                <a href="{{url_for('deleteArticle', collection_id= collection.id, article_id=a.id  )}}" class="citem"> delete </a>
+            </p>
+            {% else %}
+            <p class="item" >
+                There are no articles yet in {{collection.name}}. Use add new article to add one.
             </p>
             {% endfor %}
+            {% endif %}
+            
 
             <a class="link" href="{{url_for('DefaultCollections')}}">Back to main page </a>
         </div>

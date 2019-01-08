@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            {{art.name}}
+        </title>
+        <link rel=stylesheet type=text/css href='{{url_for('static', filename='style.css')}}'>
+    </head>
+    <body>
+        <div class="pane">
+            <h2 class="header">{{art.name}}</h2>
+            <p class="item">
+                {{art.text}}
+            </p>
+            <a href="{{url_for('editArticle', collection_id=collection_id, article_id=article_id )}}" class="citem"> edit </a>
+            <a href="{{url_for('deleteArticle', collection_id=collection_id, article_id=article_id )}}" class="citem"> delete </a><br>
+            <a class="link" href="{{url_for('collectionList', collection_id=collection_id)}}">back to {{coll.name}} </a>
+        </div>
+    </body>
+</html>
