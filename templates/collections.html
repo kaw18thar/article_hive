@@ -8,8 +8,19 @@
     </head>
     <body>
         <div class="pane">
-            <h1 class="header">Collection Hive</h1>
+            <h1 class="header">Article Hive Collections</h1>
             <a href="{{url_for('newCollection')}}" class="link">add new collection</a>
+			{% with messages = get_flashed_messages() %}
+                {% if messages %}
+					<ul class="dim">
+						{% for message in messages %}
+						<li>
+						<strong>{{ message }}</strong>
+						</li>
+						{% endfor %}
+					</ul>
+				{% endif %}
+            {% endwith %}
             {% for c in collections %}
             <p class="item" >
                 <a href="{{url_for('collectionList', collection_id= c.id )}}">{{ c.name }}</a>

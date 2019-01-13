@@ -15,6 +15,13 @@ class Collection(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(80), nullable=False)
+    @property
+    def serialize(self):
+        # returns obhect data in easily serilizable format
+        return {
+            'name': self.name,
+            'id': self.id
+        }
 
 
 class ArticleCollection(Base):
@@ -37,7 +44,8 @@ class ArticleCollection(Base):
             'name': self.name,
             'description': self.description,
             'id': self.id,
-            'text': self.text
+            'text': self.text,
+			'date': self.date
         }
 
 

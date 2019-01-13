@@ -10,8 +10,9 @@ a{
     color: steelblue;
 
 }
-article{
+.article{
     text-align: center;
+    margin: 4vw;
     
 }
 .link{
@@ -28,7 +29,7 @@ article{
     border: dashed grey 1pt;
     border-radius: 5vw;
     text-align: center;
-    height: 95vh;
+
 }
 
 .citem{

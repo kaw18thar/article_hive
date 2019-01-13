@@ -8,6 +8,17 @@
         <div class="pane">
             <h1 class="header">{{collection.name}}</h1>
             <a href="{{url_for('newArticle', collection_id=collection.id)}}" class="link">add new article</a><br>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class="dim">
+                    {% for message in messages %}
+                    <li>
+                    <strong>{{ message }}</strong>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {% endwith %}
             {% if articles %}
             {% for a in articles %}
             <p class="item" >
