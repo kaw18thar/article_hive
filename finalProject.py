@@ -64,6 +64,7 @@ def gconnect():
 
     # Check that the access token is valid.
     access_token = credentials.access_token
+    
     url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
            % access_token)
     h = httplib2.Http()
@@ -76,6 +77,7 @@ def gconnect():
 
     # Verify that the access token is used for the intended user.
     gplus_id = credentials.id_token['sub']
+    print "gplus id object"+ gplus_id
     if result['user_id'] != gplus_id:
         response = make_response(
             json.dumps("Token's user ID doesn't match given user ID."), 401)
@@ -109,7 +111,7 @@ def gconnect():
 
     data = answer.json()
 
-    login_session['username'] = data['name']
+    login_session['name'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
@@ -193,10 +195,10 @@ def newCollection():
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
-        newi = Collection( name=request.form['name']) #user_id=login_session['user_id'] ,
+        print "login session id:" +login_session['user_id']
+        newi = Collection(  user_id=login_session['user_id'], name=request.form['name']) # user_id=login_session['user_id'] ,
         session.add(newi)
         session.commit()
-        print newi.user_id
         flash("new collection created!")
         return redirect(url_for('DefaultCollections'))
     else:
@@ -255,6 +257,7 @@ def newArticle(collection_id):
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
+        
         newarticle = ArticleCollection( name=request.form['name'],
                                        description=request.form['description'],
                                        text=request.form['text'],
@@ -372,10 +375,11 @@ def ArticleJSON(collection_id, article_id):
 
 
 def createUser(login_session):
-    newU = User (name=login_session['name'], email=login_session['email'], picture=login_session['picture'])
+    print login_session['name']
+    newU = User ( name=login_session['name'], email=login_session['email'], picture=login_session['picture']) #
     session.add(newU)
     session.commit()
-    user = session.query(user).filter_by(email=login_session['email']).one()
+    user = session.query(User).filter_by(email=login_session['email']).one()
     return user.id
 
 

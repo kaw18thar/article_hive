@@ -13,17 +13,17 @@ class User(Base):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(80), nullable=False)
+    name = Column(String(100), nullable=False)
     email = Column(String(100), nullable=False)
     picture = Column(String(250))
-    @property
-    def serialize(self):
-        # returns obhect data in easily serilizable format
-        return {
-            'name': self.name,
-            'id': self.id,
-			'email': self.email
-        }
+    # @property
+    # def serialize(self):
+        # # returns obhect data in easily serilizable format
+        # return {
+            # 'name': self.name,
+            # 'id': self.id,
+			# 'email': self.email
+        # }
 
 
 class Collection(Base):
@@ -52,6 +52,7 @@ class ArticleCollection(Base):
         String(80),
         default=datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S"))
     text = Column(Text())
+	
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
     collection_id = Column(Integer, ForeignKey('collection.id'))
