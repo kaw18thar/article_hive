@@ -4,7 +4,7 @@ from flask import session as login_session
 import random, string
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Collection, ArticleCollection, Comments
+from database_setup import Base, Collection, ArticleCollection, Comments, User
 
 
 from oauth2client.client import flow_from_clientsecrets
@@ -22,7 +22,7 @@ CLIENT_ID = json.loads(
 APPLICATION_NAME = "Article Hive Collections"
 
 engine = create_engine(
-    'sqlite:///collectionsarticles.db?check_same_thread=false')
+    'sqlite:///collectionsarticlesusers.db?check_same_thread=false')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
@@ -113,10 +113,16 @@ def gconnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
+    user_id = getUserID(login_session['email'] )
+    print login_session['email']
+    if not user_id:
+        user_id = createUser(login_session)
+    login_session['user_id'] = user_id
+
     output = ''
-    output += '<h1>Welcome, '
+    output += '<h3>Welcome, '
     output += login_session['username']
-    output += '!</h1>'
+    output += '!</h3>'
     output += '<img src="'
     output += login_session['picture']
     output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
@@ -184,10 +190,13 @@ def collectionList(collection_id):
 
 @app.route('/collections/new', methods=['GET', 'POST'])
 def newCollection():
+    if 'username' not in login_session:
+        return redirect('/login')
     if request.method == 'POST':
-        newi = Collection(name=request.form['name'])
+        newi = Collection( name=request.form['name']) #user_id=login_session['user_id'] ,
         session.add(newi)
         session.commit()
+        print newi.user_id
         flash("new collection created!")
         return redirect(url_for('DefaultCollections'))
     else:
@@ -198,6 +207,8 @@ def newCollection():
 
 @app.route('/collections/<int:collection_id>/edit', methods=['GET', 'POST'])
 def editCollection(collection_id):
+    if 'username' not in login_session:
+        return redirect('/login')
     itemToedit = session.query(Collection).filter_by(id=collection_id).one()
     if request.method == 'POST':
         itemToedit.name = request.form['name']
@@ -216,6 +227,8 @@ def editCollection(collection_id):
 
 @app.route('/collections/<int:collection_id>/delete', methods=['GET', 'POST'])
 def deleteCollection(collection_id):
+    if 'username' not in login_session:
+        return redirect('/login')
     itemTodelete = session.query(Collection).filter_by(id=collection_id).one()
     if request.method == 'POST':
         session.delete(itemTodelete)
@@ -239,11 +252,14 @@ def collectionsJSON():
 
 @app.route('/collections/<int:collection_id>/new', methods=['GET', 'POST'])
 def newArticle(collection_id):
+    if 'username' not in login_session:
+        return redirect('/login')
     if request.method == 'POST':
-        newarticle = ArticleCollection(name=request.form['name'],
+        newarticle = ArticleCollection( name=request.form['name'],
                                        description=request.form['description'],
                                        text=request.form['text'],
-                                       collection_id=collection_id)
+                                       collection_id=collection_id,
+                                       user_id=login_session['user_id'] ) # user_id=login_session['user_id'] ,
         session.add(newarticle)
         session.commit()
         flash("new article added!")
@@ -264,6 +280,8 @@ def newArticle(collection_id):
         'GET',
         'POST'])
 def editArticle(collection_id, article_id):
+    if 'username' not in login_session:
+        return redirect('/login')
     itemToedit = session.query(
         ArticleCollection).filter_by(id=article_id).one()
     if request.method == 'POST':
@@ -293,6 +311,8 @@ def editArticle(collection_id, article_id):
         'GET',
         'POST'])
 def deleteArticle(collection_id, article_id):
+    if 'username' not in login_session:
+        return redirect('/login')
     itemTodelete = session.query(
         ArticleCollection).filter_by(id=article_id).one()
     if request.method == 'POST':
@@ -350,6 +370,25 @@ def ArticleJSON(collection_id, article_id):
     art = session.query(ArticleCollection).filter_by(id=article_id).one()
     return jsonify(Article=art.serialize)
 
+
+def createUser(login_session):
+    newU = User (name=login_session['name'], email=login_session['email'], picture=login_session['picture'])
+    session.add(newU)
+    session.commit()
+    user = session.query(user).filter_by(email=login_session['email']).one()
+    return user.id
+
+
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        return None
+
+def getUserInfo(user_id):
+    user = session.query(User).filter_by(id=user_id).one()
+    return user
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
