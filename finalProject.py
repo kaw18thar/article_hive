@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect
 from flask import url_for, flash, jsonify
 from flask import session as login_session
-import random, string
+import random
+import string
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Collection, ArticleCollection, Comments, User
@@ -64,7 +65,7 @@ def gconnect():
 
     # Check that the access token is valid.
     access_token = credentials.access_token
-    
+
     url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
            % access_token)
     h = httplib2.Http()
@@ -77,7 +78,7 @@ def gconnect():
 
     # Verify that the access token is used for the intended user.
     gplus_id = credentials.id_token['sub']
-    print "gplus id object"+ gplus_id
+    print "gplus id object" + gplus_id
     if result['user_id'] != gplus_id:
         response = make_response(
             json.dumps("Token's user ID doesn't match given user ID."), 401)
@@ -95,8 +96,8 @@ def gconnect():
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        response = make_response(
+            json.dumps('Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -110,25 +111,26 @@ def gconnect():
     answer = requests.get(userinfo_url, params=params)
 
     data = answer.json()
-
+    print "data of the login req: ", data
     login_session['name'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
-    user_id = getUserID(login_session['email'] )
-    print login_session['email']
+    user_id = getUserID(login_session['email'])
+
+    print "user id before creationof user is" + "email is: " + login_session['email']
     if not user_id:
         user_id = createUser(login_session)
     login_session['user_id'] = user_id
 
     output = ''
     output += '<h3>Welcome, '
-    output += login_session['username']
+    output += login_session['name']
     output += '!</h3>'
     output += '<img src="'
     output += login_session['picture']
     output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-    flash("you are now logged in as %s" % login_session['username'])
+    flash("you are now logged in as %s" % login_session['name'])
     print "done!"
     return output
 
@@ -138,13 +140,15 @@ def gdisconnect():
     access_token = login_session.get('access_token')
     if access_token is None:
         print 'Access Token is None'
-        response = make_response(json.dumps('Current user not connected.'), 401)
+        response = make_response(
+            json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
     print 'In gdisconnect access token is %s', access_token
     print 'User name is: '
-    print login_session['username']
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    print login_session['name']
+    url = 'https://accounts.google.com/o/oauth2/revoke?token={}'.format(
+        login_session['access_token'])
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print 'result is '
@@ -152,25 +156,69 @@ def gdisconnect():
     if result['status'] == '200':
         del login_session['access_token']
         del login_session['gplus_id']
-        del login_session['username']
+        del login_session['name']
         del login_session['email']
         del login_session['picture']
         response = make_response(json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
-        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+        response = make_response(
+            json.dumps(
+                'Failed to revoke token for given user.',
+                400))
         response.headers['Content-Type'] = 'application/json'
         return response
-
-
 
 
 @app.route('/')
 @app.route('/collections/')
 def DefaultCollections():
-    collections = session.query(Collection).group_by(Collection.id).all()
-    return render_template('collections.html', collections=collections)
+
+    if 'name' not in login_session:
+        c = session.query(
+            Collection.name.label('cname'),
+            User.name.label('uname'),
+            Collection.id.label('cid'),
+            User.id.label('uid')).join(
+            User,
+            User.id == Collection.user_id).add_columns(
+            User.id,
+            User.name,
+            Collection.name,
+            Collection.id).all()
+        return render_template('publicCollections.html', c=c)
+    else:
+        loggedinuser = login_session['user_id']
+        collecInfo = session.query(
+            Collection.name.label('cname'),
+            User.name.label('uname'),
+            Collection.id.label('cid'),
+            User.id.label('uid')).join(
+            User,
+            User.id == Collection.user_id).add_columns(
+            User.id,
+            User.name,
+            Collection.name,
+            Collection.id).all()
+        return render_template(
+            'collections.html',
+            loggedinuser=loggedinuser,
+            collecInfo=collecInfo)
+
+
+@app.route('/<int:user_id>/')
+def viewAuthor(user_id):
+    if 'name' not in login_session:
+        flash('unauthorized to view authors collections')
+        return redirect(url_for('DefaultCollections'))
+    else:
+        collections = session.query(Collection).filter_by(user_id=user_id)
+        author = getUserInfo(user_id)
+        return render_template(
+            'author.html',
+            collections=collections,
+            author=author)
 
 
 # viewing a collection of articles
@@ -178,25 +226,46 @@ def DefaultCollections():
 @app.route('/collections/<int:collection_id>/')
 @app.route('/collections/<int:collection_id>/list/')
 def collectionList(collection_id):
+    if 'name' not in login_session:
+        collection = session.query(Collection).filter_by(
+                    id=collection_id).one()
+        articles = session.query(ArticleCollection).filter_by(collection_id=collection_id)
+        return render_template('publiclist.html', articles=articles, collection=collection)
     collection = session.query(Collection).filter_by(
         id=collection_id).one()
     articles = session.query(ArticleCollection).filter_by(
         collection_id=collection_id)
+
+    artInfo = session.query(
+        ArticleCollection.name.label('aname'),
+        User.name.label('uname'),
+        ArticleCollection.date.label('date'),
+        ArticleCollection.id.label('aid'),
+        User.id.label('uid')).join(
+        User,
+        User.id == ArticleCollection.user_id).add_columns(
+            User.id,
+            User.name,
+            ArticleCollection.name,
+        ArticleCollection.id).all()
+    owner = getUserInfo(collection.user_id)
     return render_template(
         'collectionList.html',
         collection=collection,
-        articles=articles)
+        articles=articles, owner=owner)
 
 # creating new collection
 
 
 @app.route('/collections/new', methods=['GET', 'POST'])
 def newCollection():
-    if 'username' not in login_session:
+    if 'name' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
-        print "login session id:" +login_session['user_id']
-        newi = Collection(  user_id=login_session['user_id'], name=request.form['name']) # user_id=login_session['user_id'] ,
+        print "login session id:", login_session['user_id']
+        newi = Collection(
+            user_id=login_session['user_id'],
+            name=request.form['name'])  # user_id=login_session['user_id'] ,
         session.add(newi)
         session.commit()
         flash("new collection created!")
@@ -209,39 +278,55 @@ def newCollection():
 
 @app.route('/collections/<int:collection_id>/edit', methods=['GET', 'POST'])
 def editCollection(collection_id):
-    if 'username' not in login_session:
+    if 'name' not in login_session:
         return redirect('/login')
     itemToedit = session.query(Collection).filter_by(id=collection_id).one()
-    if request.method == 'POST':
-        itemToedit.name = request.form['name']
-        session.add(itemToedit)
-        session.commit()
-        flash("collection name edited!")
-        return redirect(url_for('DefaultCollections'))
+    owner = itemToedit.user_id
+    if owner == login_session['user_id']:
+        if request.method == 'POST':
+            itemToedit.name = request.form['name']
+            session.add(itemToedit)
+            session.commit()
+            flash("collection name edited!")
+            return redirect(url_for('DefaultCollections'))
+        else:
+            return render_template(
+                'editcollection.html',
+                collection_id=collection_id,
+                coll=itemToedit)
     else:
-        return render_template(
-            'editcollection.html',
-            collection_id=collection_id,
-            coll=itemToedit)
+        flash("unauthorized to edit this collection")
+        return redirect(url_for('DefaultCollections'))
+
 
 # deleting a collection
 
 
 @app.route('/collections/<int:collection_id>/delete', methods=['GET', 'POST'])
 def deleteCollection(collection_id):
-    if 'username' not in login_session:
+    if 'name' not in login_session:
         return redirect('/login')
     itemTodelete = session.query(Collection).filter_by(id=collection_id).one()
-    if request.method == 'POST':
-        session.delete(itemTodelete)
-        session.commit()
-        flash("collection deleted!")
-        return redirect(url_for('DefaultCollections'))
+    articlesofCollection = session.query(
+        ArticleCollection).filter_by(collection_id=collection_id)
+    owner = itemTodelete.user_id
+    if owner == login_session['user_id']:
+        if request.method == 'POST':
+            for a in articlesofCollection:
+                session.delete(a)
+                session.commit()
+            session.delete(itemTodelete)
+            session.commit()
+            flash("collection deleted!")
+            return redirect(url_for('DefaultCollections'))
+        else:
+            return render_template(
+                'deletecollection.html',
+                collection_id=collection_id,
+                coll=itemTodelete)
     else:
-        return render_template(
-            'deletecollection.html',
-            collection_id=collection_id,
-            coll=itemTodelete)
+        flash("unauthorized to delete this collection")
+        return redirect(url_for('DefaultCollections'))
 
 # adding new article to collecton no collection_id
 
@@ -254,25 +339,33 @@ def collectionsJSON():
 
 @app.route('/collections/<int:collection_id>/new', methods=['GET', 'POST'])
 def newArticle(collection_id):
-    if 'username' not in login_session:
+    if 'name' not in login_session:
         return redirect('/login')
-    if request.method == 'POST':
-        
-        newarticle = ArticleCollection( name=request.form['name'],
-                                       description=request.form['description'],
-                                       text=request.form['text'],
-                                       collection_id=collection_id,
-                                       user_id=login_session['user_id'] ) # user_id=login_session['user_id'] ,
-        session.add(newarticle)
-        session.commit()
-        flash("new article added!")
-        return redirect(
-            url_for(
-                'viewArticle',
+    collec = session.query(Collection).filter_by(id=collection_id).one()
+    owner = collec.user_id
+    if owner == login_session['user_id']:
+        if request.method == 'POST':
+            newarticle = ArticleCollection(
+                name=request.form['name'],
+                description=request.form['description'],
+                text=request.form['text'],
                 collection_id=collection_id,
-                article_id=newarticle.id))
+                user_id=login_session['user_id'])  # user_id=login_session['user_id'] ,
+            session.add(newarticle)
+            session.commit()
+            flash("new article added!")
+            return redirect(
+                url_for(
+                    'viewArticle',
+                    collection_id=collection_id,
+                    article_id=newarticle.id))
+        else:
+            return render_template(
+                "newarticle.html",
+                collection_id=collection_id)
     else:
-        return render_template("newarticle.html", collection_id=collection_id)
+        flash("unauthorized to add to this collection")
+        return redirect(url_for('collectionList', collection_id=collection_id))
 
 # editing an article
 
@@ -283,27 +376,36 @@ def newArticle(collection_id):
         'GET',
         'POST'])
 def editArticle(collection_id, article_id):
-    if 'username' not in login_session:
+    if 'name' not in login_session:
         return redirect('/login')
     itemToedit = session.query(
         ArticleCollection).filter_by(id=article_id).one()
-    if request.method == 'POST':
-        itemToedit.name = request.form['name']
-        itemToedit.description = request.form['description']
-        itemToedit.text = request.form['text']
-        session.add(itemToedit)
-        session.commit()
-        flash("article edited!")
+    owner = itemToedit.user_id
+    if owner == login_session['user_id']:
+        if request.method == 'POST':
+            itemToedit.name = request.form['name']
+            itemToedit.description = request.form['description']
+            itemToedit.text = request.form['text']
+            session.add(itemToedit)
+            session.commit()
+            flash("article edited!")
+            return redirect(
+                url_for(
+                    'viewArticle',
+                    collection_id=collection_id,
+                    article_id=article_id))
+
+        else:
+            return render_template('editarticle.html',
+                                   collection_id=collection_id,
+                                   article_id=article_id, art=itemToedit)
+    else:
+        flash("unauthorized to edit this article")
         return redirect(
             url_for(
                 'viewArticle',
-                collection_id=collection_id,
-                article_id=article_id))
-
-    else:
-        return render_template('editarticle.html',
-                               collection_id=collection_id,
-                               article_id=article_id, art=itemToedit)
+                article_id=article_id,
+                collection_id=collection_id))
 
 # deleting an article
 
@@ -314,7 +416,7 @@ def editArticle(collection_id, article_id):
         'GET',
         'POST'])
 def deleteArticle(collection_id, article_id):
-    if 'username' not in login_session:
+    if 'name' not in login_session:
         return redirect('/login')
     itemTodelete = session.query(
         ArticleCollection).filter_by(id=article_id).one()
@@ -344,20 +446,29 @@ def deleteArticle(collection_id, article_id):
         'GET',
         'POST'])
 def viewArticle(collection_id, article_id):
+
     item = session.query(ArticleCollection).filter_by(id=article_id).one()
     collection = session.query(Collection).filter_by(id=collection_id).one()
-    if request.method == 'POST':
-        session.delete(itemTodelete)
-        session.commit()
-        flash("article deleted!")
-        return redirect(url_for('collectionList', collection_id=collection_id))
-    else:
+    if 'name' not in login_session or item.user_id != login_session['user_id']:
         return render_template(
-            'viewarticle.html',
+            'publicArticle.html',
             collection_id=collection_id,
             coll=collection,
             article_id=article_id,
             art=item)
+    else: 
+        if request.method == 'POST':
+            session.delete(itemTodelete)
+            session.commit()
+            flash("article deleted!")
+            return redirect(url_for('collectionList', collection_id=collection_id))
+        else:
+            return render_template(
+                'viewarticle.html',
+                collection_id=collection_id,
+                coll=collection,
+                article_id=article_id,
+                art=item)
 
 
 @app.route('/collections/<int:collection_id>/JSON')
@@ -376,7 +487,10 @@ def ArticleJSON(collection_id, article_id):
 
 def createUser(login_session):
     print login_session['name']
-    newU = User ( name=login_session['name'], email=login_session['email'], picture=login_session['picture']) #
+    newU = User(
+        name=login_session['name'],
+        email=login_session['email'],
+        picture=login_session['picture'])
     session.add(newU)
     session.commit()
     user = session.query(User).filter_by(email=login_session['email']).one()
@@ -387,14 +501,17 @@ def getUserID(email):
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id
-    except:
+    except BaseException:
         return None
+
 
 def getUserInfo(user_id):
     user = session.query(User).filter_by(id=user_id).one()
+    print user
     return user
+
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5080)

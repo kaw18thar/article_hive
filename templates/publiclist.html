@@ -7,7 +7,6 @@
     <body>
         <div class="pane">
             <h1 class="header">{{collection.name}}</h1>
-            <a href="{{url_for('newArticle', collection_id=collection.id)}}" class="link">add new article</a><br>
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
                 <ul class="dim">
@@ -28,12 +27,10 @@
             </p>
             {% else %}
             <p class="item" >
-                There are no articles yet in {{collection.name}}. Use add new article to add one.
+                There are no articles yet in {{collection.name}}.
             </p>
             {% endfor %}
             {% endif %}
-            
-            <div><a class="link" href="{{url_for('viewAuthor', user_id=collection.user_id )}}">Back to author <object class="owner">{{owner.name}}</object> </a>  </div>
             <div> <a class="link" href="{{url_for('DefaultCollections')}}">Back to main page </a>  </div>
         </div>
     </body>

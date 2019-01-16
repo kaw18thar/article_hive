@@ -9,10 +9,7 @@
     <body>
         <div class="pane">
             <h1 class="header">Article Hive Collections</h1>
-            <div>
-                <a href="{{url_for('newCollection')}}" class="link">add new collection</a>
-            </div>
-            
+
 			{% with messages = get_flashed_messages() %}
                 {% if messages %}
 					<ul class="dim">
@@ -24,19 +21,11 @@
 					</ul>
 				{% endif %}
             {% endwith %}
-            <p> </p>
-            {% for c in collecInfo %}
+            {% for c in c %}
             <div class="item" >
                 <div class="cname">
-                    <a href="{{url_for('collectionList', collection_id= c.id )}}">{{ c.cname }}</a>
-                    - <a class="owner" href="{{url_for('viewAuthor', user_id= c.uid )}}">{{c.uname}} </a>
+                    <a href="{{url_for('collectionList', collection_id= c.id )}}">{{ c.cname }}</a> - <label class="owner">{{ c.uname}}</label>
                 </div>
-                {% if loggedinuser == c.uid %}
-                <div>
-                    <a href="{{url_for('editCollection', collection_id= c.id )}}" class="citem"> edit </a>
-                    <a href="{{url_for('deleteCollection', collection_id= c.id )}}" class="citem"> delete </a>
-                </div>
-                {% endif %}
                 
                 
             </div>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            {{art.name}}
+        </title>
+        <link rel=stylesheet type=text/css href='{{url_for('static', filename='style.css')}}'>
+    </head>
+    <body>
+        <div class="pane">
+            <h2 class="header">{{art.name}}</h2>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class="dim">
+                    {% for message in messages %}
+                    <li>
+                    <strong>{{ message }}</strong>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            {% endwith %}
+            <p class="item article">
+                {{art.text}}
+            </p>
+            <a class="link" href="{{url_for('collectionList', collection_id=collection_id)}}">back to {{coll.name}} </a>
+        </div>
+    </body>
+</html>

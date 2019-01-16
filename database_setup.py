@@ -14,7 +14,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False)
-    email = Column(String(100), nullable=False)
+    email = Column(String(100), nullable=False , unique=True)
     picture = Column(String(250))
     # @property
     # def serialize(self):

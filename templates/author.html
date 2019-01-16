@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            {{author.name}}
+        </title>    
+        <link rel=stylesheet type=text/css href='{{url_for('static', filename='style.css')}}'>
+    </head>
+    <body>
+        <div class="pane">
+            <h1 class="header owner"> {{author.name}} Collections</h1>
+
+			{% with messages = get_flashed_messages() %}
+                {% if messages %}
+					<ul class="dim">
+						{% for message in messages %}
+						<li>
+						<strong>{{ message }}</strong>
+						</li>
+						{% endfor %}
+					</ul>
+				{% endif %}
+            {% endwith %}
+            {% for c in collections %}
+            <div class="item cname" >
+                <div>
+                    <a href="{{url_for('collectionList', collection_id= c.id )}}">{{ c.name }}</a>
+                </div>
+                
+                
+            </div>
+            
+            {% endfor %}
+
+            <a class="link" href="{{url_for('DefaultCollections')}}">Back to main page </a>
+
+        </div>
+    </body>
+</html>
