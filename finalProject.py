@@ -171,7 +171,7 @@ def gdisconnect():
         return response
 
 
-@app.route('/')
+@app.route('/') 
 @app.route('/collections/')
 def DefaultCollections():
 
