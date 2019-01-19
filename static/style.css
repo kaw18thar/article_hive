@@ -1,6 +1,7 @@
 html{
     background-image: url('full-bloom.png');
     background-repeat: repeat;
+    margin: 4vw;
 }
 a{
     color: steelblue;
@@ -12,7 +13,8 @@ a{
 }
 .article{
     text-align: center;
-    margin: 4vw;
+    margin: 5pt;
+
     
 }
 .link{
@@ -37,9 +39,27 @@ a{
     border: dashed grey 1pt;
     border-radius: 5vw;
     text-align: center;
+    
+    display: block;
+    block-size: inherit;
+
+    height: 95%;
+    margin: 5pt;
 
 }
-
+.art{
+    order: 1;
+    width: 100%;
+}
+.art2{
+    order: 2;
+    width: 100%;
+    
+}
+.art3{
+    order: 3;
+    width: 100%;
+}
 .citem{
     color: dimgrey;
    

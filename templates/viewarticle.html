@@ -8,6 +8,7 @@
     </head>
     <body>
         <div class="pane">
+            <div class="art">
             <h2 class="header">{{art.name}}</h2>
             
             {% with messages = get_flashed_messages() %}
@@ -24,10 +25,21 @@
             <p class="item article">
                 {{art.text}}
             </p>
+            {% if viewer == art.user_id %}
             <a href="{{url_for('editArticle', collection_id=collection_id, article_id=article_id )}}" class="citem"> edit </a>
             <a href="{{url_for('deleteArticle', collection_id=collection_id, article_id=article_id )}}" class="citem"> delete </a><br>
-            <a class="link" href="{{url_for('collectionList', collection_id=collection_id)}}">back to {{coll.name}} </a><br><br>
+            {% endif %}
+            <br> <br>
+            <a class="link" href="{{url_for('addComment', collection_id=collection_id, article_id=article_id)}}">Add a comment</a> <br>
+            </div>
+            <div class="art2">
+            {% block content %}{% endblock %}
+            </div> 
+            <div class="art3">
+            <a class="link " href="{{url_for('collectionList', collection_id=collection_id)}}"  >back to <object class="cname" >{{coll.name}} </object> </a><br><br>
             <a class="link" href="{{url_for('gdisconnect')}}">LOG OUT</a>
+            </div>
+            
         </div>
     </body>
 </html>

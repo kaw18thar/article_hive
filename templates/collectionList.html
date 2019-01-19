@@ -34,7 +34,7 @@
             {% endfor %}
             {% endif %}
             
-            <div><a class="link" href="{{url_for('viewAuthor', user_id=collection.user_id )}}">Back to author <object class="owner">{{owner.name}}</object> </a>  </div>
+            <div><BR><a class="link" href="{{url_for('viewAuthor', user_id=collection.user_id )}}">Author <object class="owner">{{owner.name}}</object> </a> <BR> </div><BR>
             <div> <a class="link" href="{{url_for('DefaultCollections')}}">Back to main page </a>  </div><br><br>
             <a class="link" href="{{url_for('gdisconnect')}}">LOG OUT</a>
         </div>

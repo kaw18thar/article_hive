@@ -73,7 +73,7 @@ class ArticleCollection(Base):
 class Comments(Base):
     __tablename__ = 'comments'
 
-    name = Column(String(80), nullable=False)
+    title = Column(String(80), nullable=False)
     id = Column(Integer, primary_key=True)
     text = Column(Text())
     date = Column(

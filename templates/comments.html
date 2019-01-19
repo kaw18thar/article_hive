@@ -1,0 +1,29 @@
+{% extends "viewarticle.html" %}
+{% block content  %}
+ <div class="">
+  <h3 class="header">Comments</h3>
+  <div class="art2">
+        <form action="{{ url_for('addComment', collection_id=collection_id, article_id=article_id) }}" method=post>
+        
+            <label class="item">title: </label><br>
+            <input class="item" type='text' size="38" name='title'> <br>
+            <label class="item"  >text: </label> <br>
+            <textarea  class="item" type='text' rows="5" cols="35"  name='text'></textarea><br>
+           <button class="citem submit"  type=submit  class="submit" >add </button>
+        </form>
+      </div>
+  {% if comments %}
+  <div class="item art2">
+      {% for c in comments %}
+    <h5 class="citem">{{ c.ctitle }}</h5> <label class="dim">{{ c.date }}</label> <br>
+    <object class="item cname"><strong>{{ c.owner }} </strong></object>
+    <p class="citem">{{ c.ctext }}</p>
+  
+  {% endfor %}
+  {% else %}
+  <div class="item art2">
+      There are no comments to this article yet.. Be the first one to comment <br> <br>
+  </div></div>
+  {% endif %}
+
+{% endblock %}
