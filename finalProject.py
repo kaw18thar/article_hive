@@ -481,7 +481,7 @@ def viewArticle(collection_id, article_id):
             art=item, logged=loggeduser)
     else:
         if request.method == 'POST':
-            session.delete(itemTodelete)
+            session.delete(item)
             session.commit()
             flash("article deleted!")
             return redirect(
@@ -552,7 +552,8 @@ def addComment(collection_id, article_id):
             collect = session.query(Collection).filter_by(
                 id=collection_id).one()
             return render_template('comments.html', comments=co, art=article,
-                                   coll=collect, collection_id=collection_id, article_id=article_id)
+                                   coll=collect, collection_id=collection_id,
+                                   article_id=article_id)
 
 
 @app.route('/collections/<int:collection_id>/JSON')

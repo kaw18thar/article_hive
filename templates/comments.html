@@ -6,9 +6,9 @@
         <form action="{{ url_for('addComment', collection_id=collection_id, article_id=article_id) }}" method=post>
         
             <label class="item">title: </label><br>
-            <input class="item" type='text' size="38" name='title'> <br>
+            <input class="item" type='text' size="38" name='title' required> <br>
             <label class="item"  >text: </label> <br>
-            <textarea  class="item" type='text' rows="5" cols="35"  name='text'></textarea><br>
+            <textarea  class="item" type='text' rows="5" cols="35"  name='text' required></textarea><br>
            <button class="citem submit"  type=submit  class="submit" >add </button>
         </form>
       </div>

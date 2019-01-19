@@ -12,11 +12,11 @@
             <form action="{{url_for('newArticle', collection_id=collection_id)}}"  method="POST">
                 <p class="item"> 
                     <p class="item">Name: </p>
-                    <input size="43"  name="name"> <br>
+                    <input size="43"  name="name" required> <br>
                     <p class="item">Description: </p>
                         <input size="43" name="description"><br>
                     <p class="item"> Text: </p>
-                    <textarea rows="10" cols="40" name="text"></textarea > <br>
+                    <textarea rows="10" cols="40" name="text" required></textarea > <br>
                     <button class='submit' type="submit">add</button> 
                 </p>
             </form>
