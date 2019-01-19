@@ -30,7 +30,7 @@
             <a href="{{url_for('deleteArticle', collection_id=collection_id, article_id=article_id )}}" class="citem"> delete </a><br>
             {% endif %}
             <br> <br>
-            <a class="link" href="{{url_for('addComment', collection_id=collection_id, article_id=article_id)}}">Add a comment</a> <br>
+            <a class="link" href="{{url_for('addComment', collection_id=collection_id, article_id=article_id)}}">Show comments</a> <br>
             </div>
             <div class="art2">
             {% block content %}{% endblock %}

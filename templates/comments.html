@@ -15,8 +15,8 @@
   {% if comments %}
   <div class="item art2">
       {% for c in comments %}
-    <h5 class="citem">{{ c.ctitle }}</h5> <label class="dim">{{ c.date }}</label> <br>
-    <object class="item cname"><strong>{{ c.owner }} </strong></object>
+    <h5 class="citem">{{ c.ctitle }}</h5> 
+    <object class="item cname"><strong>{{ c.owner }} </strong></object><label class="dim">{{ c.date }}</label> 
     <p class="citem">{{ c.ctext }}</p>
   
   {% endfor %}
