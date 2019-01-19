@@ -172,7 +172,7 @@ def gdisconnect():
         return response
 
 
-@app.route('/') 
+@app.route('/')
 @app.route('/collections/')
 def DefaultCollections():
 
@@ -229,9 +229,11 @@ def viewAuthor(user_id):
 def collectionList(collection_id):
     if 'name' not in login_session:
         collection = session.query(Collection).filter_by(
-                    id=collection_id).one()
-        articles = session.query(ArticleCollection).filter_by(collection_id=collection_id)
-        return render_template('publiclist.html', articles=articles, collection=collection)
+            id=collection_id).one()
+        articles = session.query(ArticleCollection).filter_by(
+            collection_id=collection_id)
+        return render_template(
+            'publiclist.html', articles=articles, collection=collection)
     collection = session.query(Collection).filter_by(
         id=collection_id).one()
     articles = session.query(ArticleCollection).filter_by(
@@ -420,9 +422,10 @@ def deleteArticle(collection_id, article_id):
     item = session.query(ArticleCollection).filter_by(id=article_id).one()
     collection = session.query(Collection).filter_by(id=collection_id).one()
     loggeduser = False
-    # if a user is logged safe this variable as true and send it to the public view article
+    # if a user is logged safe this variable as true and send it to the public
+    # view article
     if 'name' in login_session:
-        loggeduser = True 
+        loggeduser = True
 
     if 'name' not in login_session or item.user_id != login_session['user_id']:
         return render_template(
@@ -431,7 +434,7 @@ def deleteArticle(collection_id, article_id):
             coll=collection,
             article_id=article_id,
             art=item, logged=loggeduser)
-    
+
     itemTodelete = session.query(
         ArticleCollection).filter_by(id=article_id).one()
     if request.method == 'POST':
@@ -464,9 +467,10 @@ def viewArticle(collection_id, article_id):
     item = session.query(ArticleCollection).filter_by(id=article_id).one()
     collection = session.query(Collection).filter_by(id=collection_id).one()
     loggeduser = False
-    # if a user is logged safe this variable as true and send it to the public view article
+    # if a user is logged safe this variable as true and send it to the public
+    # view article
     if 'name' in login_session:
-        loggeduser = True 
+        loggeduser = True
 
     if 'name' not in login_session or item.user_id != login_session['user_id']:
         return render_template(
@@ -475,12 +479,13 @@ def viewArticle(collection_id, article_id):
             coll=collection,
             article_id=article_id,
             art=item, logged=loggeduser)
-    else: 
+    else:
         if request.method == 'POST':
             session.delete(itemTodelete)
             session.commit()
             flash("article deleted!")
-            return redirect(url_for('collectionList', collection_id=collection_id))
+            return redirect(
+                url_for('collectionList', collection_id=collection_id))
         else:
             return render_template(
                 'viewarticle.html',
@@ -488,6 +493,7 @@ def viewArticle(collection_id, article_id):
                 coll=collection,
                 article_id=article_id,
                 art=item, viewer=login_session['user_id'])
+
 
 @app.route(
     '/collections/<int:collection_id>/<int:article_id>#comment',
@@ -505,9 +511,10 @@ def addComment(collection_id, article_id):
 
     # let's first check that no one is using the url to view or add comments:
     if 'name' not in login_session:
-        flash("unauthorized") 
-        return redirect(url_for('viewArticle', collection_id=collection_id, article_id=article_id)) # a soft redirect
-    else: 
+        flash("unauthorized")
+        return redirect(url_for('viewArticle', collection_id=collection_id,
+                                article_id=article_id))  # a soft redirect
+    else:
         if request.method == 'POST':
             newcomment = Comments(
                 title=request.form['title'],
@@ -522,32 +529,30 @@ def addComment(collection_id, article_id):
                     'addComment',
                     collection_id=collection_id,
                     article_id=article_id))
-        else: # 
+        else:
             co = session.query(
-            Comments.title.label('ctitle'),            
-            Comments.text.label('ctext'),
-            Comments.date.label('date'),
-            User.name.label('owner'),
-            Comments.id.label('cid'),
-            User.id.label('uid')).join(
-            User,
-            User.id == Comments.user_id).add_columns(
-            User.id,
-            User.name,
-            Comments.title,
-            Comments.text,
-            Comments.date,
-            Comments.id).all()
-            comments = session.query(Comments).filter_by(article_id=article_id).all()
-            article = session.query(ArticleCollection).filter_by(id=article_id).one()
-            collect = session.query(Collection).filter_by(id=collection_id).one()
-            return render_template('comments.html', comments = co, art = article, coll=collect,collection_id=collection_id,article_id=article_id )
-        
-
-
-
-
-
+                Comments.title.label('ctitle'),
+                Comments.text.label('ctext'),
+                Comments.date.label('date'),
+                User.name.label('owner'),
+                Comments.id.label('cid'),
+                User.id.label('uid')).join(
+                User,
+                User.id == Comments.user_id).add_columns(
+                User.id,
+                User.name,
+                Comments.title,
+                Comments.text,
+                Comments.date,
+                Comments.id).all()
+            comments = session.query(Comments).filter_by(
+                article_id=article_id).all()
+            article = session.query(
+                ArticleCollection).filter_by(id=article_id).one()
+            collect = session.query(Collection).filter_by(
+                id=collection_id).one()
+            return render_template('comments.html', comments=co, art=article,
+                                   coll=collect, collection_id=collection_id, article_id=article_id)
 
 
 @app.route('/collections/<int:collection_id>/JSON')
