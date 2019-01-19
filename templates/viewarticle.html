@@ -9,6 +9,7 @@
     <body>
         <div class="pane">
             <h2 class="header">{{art.name}}</h2>
+            
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
                 <ul class="dim">
@@ -25,7 +26,8 @@
             </p>
             <a href="{{url_for('editArticle', collection_id=collection_id, article_id=article_id )}}" class="citem"> edit </a>
             <a href="{{url_for('deleteArticle', collection_id=collection_id, article_id=article_id )}}" class="citem"> delete </a><br>
-            <a class="link" href="{{url_for('collectionList', collection_id=collection_id)}}">back to {{coll.name}} </a>
+            <a class="link" href="{{url_for('collectionList', collection_id=collection_id)}}">back to {{coll.name}} </a><br><br>
+            <a class="link" href="{{url_for('gdisconnect')}}">LOG OUT</a>
         </div>
     </body>
 </html>

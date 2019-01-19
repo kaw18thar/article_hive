@@ -9,6 +9,7 @@
     <body>
         <div class="pane">
             <h2 class="header">{{art.name}}</h2>
+            <a class="link" href="{{url_for('showLogin')}}">LOG IN</a>
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
                 <ul class="dim">
