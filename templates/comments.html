@@ -8,16 +8,16 @@
             <label class="item">title: </label><br>
             <input class="item" type='text' size="38" name='title' required> <br>
             <label class="item"  >text: </label> <br>
-            <textarea  class="item" type='text' rows="5" cols="35"  name='text' required></textarea><br>
+            <textarea  class="item" type='text' rows="5" cols="40"  name='text' required></textarea><br>
            <button class="citem submit"  type=submit  class="submit" >add </button>
         </form>
       </div>
   {% if comments %}
   <div class="item art2">
       {% for c in comments %}
-    <h5 class="citem">{{ c.ctitle }}</h5> 
-    <object class="item cname"><strong>{{ c.owner }} </strong></object><label class="dim">{{ c.date }}</label> 
-    <p class="citem">{{ c.ctext }}</p>
+    <br><object class="citem"><strong>{{ c.ctitle }}</strong></object> <br>
+    <object class="item cname"><strong>{{ c.owner }} </strong></object><label class="dim">{{ c.date }}</label> <br>
+    <object class="citem">{{ c.ctext }}</object><br>
   
   {% endfor %}
   {% else %}

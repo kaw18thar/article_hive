@@ -196,12 +196,12 @@ def DefaultCollections():
             User.name.label('uname'),
             Collection.id.label('cid'),
             User.id.label('uid')).join(
-            User,
-            User.id == Collection.user_id).add_columns(
+            User).add_columns(
             User.id,
             User.name,
             Collection.name,
             Collection.id).all()
+        print "Collection id, name, user id: ", collecInfo
         return render_template(
             'collections.html',
             loggedinuser=loggedinuser,
@@ -463,7 +463,10 @@ def deleteArticle(collection_id, article_id):
         'GET',
         'POST'])
 def viewArticle(collection_id, article_id):
-
+    comments = session.query(Comments).filter_by(
+                article_id=article_id).all()
+    comj = json.dumps(comments)
+    print comj
     item = session.query(ArticleCollection).filter_by(id=article_id).one()
     collection = session.query(Collection).filter_by(id=collection_id).one()
     loggeduser = False
@@ -487,6 +490,8 @@ def viewArticle(collection_id, article_id):
             return redirect(
                 url_for('collectionList', collection_id=collection_id))
         else:
+            comments = session.query(Comments).filter_by(
+                article_id=article_id).all()
             return render_template(
                 'viewarticle.html',
                 collection_id=collection_id,
@@ -535,10 +540,13 @@ def addComment(collection_id, article_id):
                 Comments.text.label('ctext'),
                 Comments.date.label('date'),
                 User.name.label('owner'),
-                Comments.id.label('cid'),
-                User.id.label('uid')).join(
-                User,
-                User.id == Comments.user_id).add_columns(
+                Comments.id.label('cid'),Comments.user_id.label('cuid'),
+                Comments.article_id.label('caid'),
+                ArticleCollection.id.label('aid'),
+                User.id.label('uid')).filter(
+                ArticleCollection.id == Comments.article_id).add_columns(
+                Comments.article_id,
+                ArticleCollection.id,
                 User.id,
                 User.name,
                 Comments.title,

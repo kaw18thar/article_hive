@@ -24,15 +24,17 @@
             {% endwith %}
             <p class="item article">
                 {{art.text}}
-            </p>
+            </p><br>
             {% if viewer == art.user_id %}
             <a href="{{url_for('editArticle', collection_id=collection_id, article_id=article_id )}}" class="citem"> edit </a>
             <a href="{{url_for('deleteArticle', collection_id=collection_id, article_id=article_id )}}" class="citem"> delete </a><br>
             {% endif %}
-            <br> <br>
-            <a class="link" href="{{url_for('addComment', collection_id=collection_id, article_id=article_id)}}">Show comments</a> <br>
-            </div>
+            <br> <br></div>
             <div class="art2">
+            <a class="link" href="{{url_for('addComment', collection_id=collection_id, article_id=article_id)}}">Show comments</a> <br>
+            
+            
+                <br>
             {% block content %}{% endblock %}
             </div> 
             <div class="art3">

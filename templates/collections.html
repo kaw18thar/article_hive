@@ -28,7 +28,7 @@
             {% for c in collecInfo %}
             <div class="item" >
                 <div class="cname">
-                    <a href="{{url_for('collectionList', collection_id= c.id )}}">{{ c.cname }}</a>
+                    <a href="{{url_for('collectionList', collection_id= c.cid )}}">{{ c.cname }}</a>
                     - <a class="owner" href="{{url_for('viewAuthor', user_id= c.uid )}}">{{c.uname}} </a>
                 </div>
                 {% if loggedinuser == c.uid %}

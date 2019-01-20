@@ -83,6 +83,17 @@ class Comments(Base):
     article_item = relationship(ArticleCollection)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
+    @property
+    def serialize(self):
+        # returns obhect data in easily serilizable format
+        return {
+            'title': self.title,
+            'id': self.id,
+            'text': self.text,
+            'date': self.date,
+            'articl_id': self.article_id,
+            'user_id': self.user_id
+        }
 
 
 engine = create_engine(
