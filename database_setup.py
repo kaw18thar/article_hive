@@ -97,7 +97,7 @@ class Comments(Base):
 
 
 engine = create_engine(
-    'sqlite:///collectionsarticlesusers.db?check_same_thread=false')
+    'postgresql://catalog:ayman@localhost/catalog')
 
 
 Base.metadata.create_all(engine)
