@@ -17,13 +17,13 @@ import requests
 
 
 app = Flask(__name__)
-
+# change Here !!!!!!!
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Article Hive Collections"
 
 engine = create_engine(
-    'sqlite:///collectionsarticlesusers.db?check_same_thread=false')
+    'postgresql://catalog:ayman@localhost/catalog')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
@@ -54,7 +54,7 @@ def gconnect():
 
     try:
         # Upgrade the authorization code into a credentials object
-        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='') # change Here !!!!!!!
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:
@@ -465,10 +465,26 @@ def deleteArticle(collection_id, article_id):
 def viewArticle(collection_id, article_id):
     comments = session.query(Comments).filter_by(
                 article_id=article_id).all()
-    comj = json.dumps(comments)
-    print comj
     item = session.query(ArticleCollection).filter_by(id=article_id).one()
     collection = session.query(Collection).filter_by(id=collection_id).one()
+    co = session.query(
+                Comments.title.label('ctitle'),
+                Comments.text.label('ctext'),
+                Comments.date.label('date'),
+                User.name.label('owner'),
+                Comments.id.label('cid'),Comments.user_id.label('cuid'),
+                Comments.article_id.label('caid'),
+                ArticleCollection.id.label('aid'),
+                User.id.label('uid')).filter(
+                ArticleCollection.id == Comments.article_id).filter(User.id==Comments.user_id).add_columns(
+                Comments.article_id,
+                ArticleCollection.id,
+                User.id,
+                User.name,
+                Comments.title,
+                Comments.text,
+                Comments.date,
+                Comments.id).all()
     loggeduser = False
     # if a user is logged safe this variable as true and send it to the public
     # view article
@@ -481,7 +497,7 @@ def viewArticle(collection_id, article_id):
             collection_id=collection_id,
             coll=collection,
             article_id=article_id,
-            art=item, logged=loggeduser)
+            art=item, logged=loggeduser, comments = co)
     else:
         if request.method == 'POST':
             session.delete(item)
@@ -497,7 +513,7 @@ def viewArticle(collection_id, article_id):
                 collection_id=collection_id,
                 coll=collection,
                 article_id=article_id,
-                art=item, viewer=login_session['user_id'])
+                art=item, viewer=login_session['user_id'], comments = co)
 
 
 @app.route(
@@ -544,7 +560,7 @@ def addComment(collection_id, article_id):
                 Comments.article_id.label('caid'),
                 ArticleCollection.id.label('aid'),
                 User.id.label('uid')).filter(
-                ArticleCollection.id == Comments.article_id).add_columns(
+                ArticleCollection.id == Comments.article_id).filter(User.id==Comments.user_id).add_columns(
                 Comments.article_id,
                 ArticleCollection.id,
                 User.id,
@@ -607,4 +623,4 @@ def getUserInfo(user_id):
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
-    app.run(host='0.0.0.0', port=5080)
+    #app.run(host='0.0.0.0', port=5080)

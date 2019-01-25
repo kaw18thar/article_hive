@@ -28,6 +28,19 @@
             </p>
             <br> 
             {% if logged == True %}
+            {% if comments %}
+                    <div class="item art2">
+                        {% for c in comments %}
+                      <br><object class="citem"><strong>{{ c.ctitle }}</strong></object> <br>
+                      <object class="item cname"><strong>{{ c.owner }} </strong></object><label class="dim">{{ c.date }}</label> <br>
+                      <object class="citem">{{ c.ctext }}</object><br>
+                    
+                    {% endfor %}
+                    {% else %}
+                    <div class="item art2">
+                        There are no comments to this article yet.. Be the first one to comment <br> <br>
+                    </div></div>
+                    {% endif %}
             <a class="link" href="{{url_for('addComment', collection_id=collection_id, article_id=article_id)}}">Show comments</a> <br>
             {% block content %}{% endblock %}
             {% endif %}

@@ -78,7 +78,7 @@ class Comments(Base):
     text = Column(Text())
     date = Column(
         String(80),
-        default=datetime.datetime.now().strftime("%Y-%M-%D %H:%M"))
+        default=datetime.datetime.now().strftime("%y-%m-%d %H:%M"))
     article_id = Column(Integer, ForeignKey('article_item.id'))
     article_item = relationship(ArticleCollection)
     user_id = Column(Integer, ForeignKey('user.id'))
