@@ -476,7 +476,7 @@ def viewArticle(collection_id, article_id):
                 Comments.article_id.label('caid'),
                 ArticleCollection.id.label('aid'),
                 User.id.label('uid')).filter(
-                ArticleCollection.id == Comments.article_id).filter(User.id==Comments.user_id).add_columns(
+                Comments.article_id == article_id).filter(User.id==Comments.user_id).add_columns(
                 Comments.article_id,
                 ArticleCollection.id,
                 User.id,
@@ -560,7 +560,7 @@ def addComment(collection_id, article_id):
                 Comments.article_id.label('caid'),
                 ArticleCollection.id.label('aid'),
                 User.id.label('uid')).filter(
-                ArticleCollection.id == Comments.article_id).filter(User.id==Comments.user_id).add_columns(
+               Comments.article_id == article_id).filter(User.id==Comments.user_id).add_columns(
                 Comments.article_id,
                 ArticleCollection.id,
                 User.id,
@@ -569,15 +569,18 @@ def addComment(collection_id, article_id):
                 Comments.text,
                 Comments.date,
                 Comments.id).all()
+                # .group_by(Comments.article_id, Comments.title , Comments.text, Comments.date,
+                # User.id, User.name, Comments.id,  ArticleCollection.id
+                # )
             comments = session.query(Comments).filter_by(
-                article_id=article_id).all()
+                article_id=item.id).all()
             article = session.query(
                 ArticleCollection).filter_by(id=article_id).one()
             collect = session.query(Collection).filter_by(
                 id=collection_id).one()
             return render_template('comments.html', comments=co, art=article,
                                    coll=collect, collection_id=collection_id,
-                                   article_id=article_id)
+                                   article_id=article_id, viewer=login_session['user_id'])
 
 
 @app.route('/collections/<int:collection_id>/JSON')
@@ -623,4 +626,4 @@ def getUserInfo(user_id):
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
-    #app.run(host='0.0.0.0', port=5080)
+    app.run(host='0.0.0.0', port=5080)

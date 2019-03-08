@@ -4,6 +4,8 @@
         <title>
             {{art.name}}
         </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
         <link rel=stylesheet type=text/css href='{{url_for('static', filename='style.css')}}'>
     </head>
     <body>
@@ -22,39 +24,45 @@
                 </ul>
                 {% endif %}
             {% endwith %}
-            <p class="item article">
-                {{art.text}}
-            </p><br>
             {% if viewer == art.user_id %}
             <a href="{{url_for('editArticle', collection_id=collection_id, article_id=article_id )}}" class="citem"> edit </a>
             <a href="{{url_for('deleteArticle', collection_id=collection_id, article_id=article_id )}}" class="citem"> delete </a><br>
             {% endif %}
+            <p class="item article">
+                
+                {{art.text}}
+            </p><br>
+
             <br> <br></div>
+            
             <div class="art2">
+                    <h3 class="header">Comments</h3>
                     {% if comments %}
-                    <div class="item art2">
+                    <div class="item ">
                         {% for c in comments %}
                       <br><object class="citem"><strong>{{ c.ctitle }}</strong></object> <br>
                       <object class="item cname"><strong>{{ c.owner }} </strong></object><label class="dim">{{ c.date }}</label> <br>
                       <object class="citem">{{ c.ctext }}</object><br>
                     
                     {% endfor %}
+                </div>
                     {% else %}
-                    <div class="item art2">
+                    <div class="item ">
                         There are no comments to this article yet.. Be the first one to comment <br> <br>
-                    </div></div>
-                    {% endif %}
-            <a class="link" href="{{url_for('addComment', collection_id=collection_id, article_id=article_id)}}">Show comments</a> <br>
+                    </div>
+               
+                    {% endif %} </div>
+            <a class="link" href="{{url_for('addComment', collection_id=collection_id, article_id=article_id)}}">add a comment</a> <br>
             
             
                 <br>
-            {% block content %}{% endblock %}
-            </div> 
-            <div class="art3">
-            <a class="link " href="{{url_for('collectionList', collection_id=collection_id)}}"  >back to <object class="cname" >{{coll.name}} </object> </a><br><br>
-            <a class="link" href="{{url_for('gdisconnect')}}">LOG OUT</a>
-            </div>
+           
             
-        </div>
+             {% block content %}{% endblock %}
+             <div class="art">
+                <a class="link " href="{{url_for('collectionList', collection_id=collection_id)}}"  >back to <object class="cname" >{{coll.name}} </object> </a><br><br>
+                <a class="link" href="{{url_for('gdisconnect')}}">LOG OUT</a>
+                </div>
+        </div></div> 
     </body>
 </html>

@@ -1,7 +1,7 @@
 {% extends "viewarticle.html" %}
 {% block content  %}
  <div class="">
-  <h3 class="header">Comments</h3>
+  
   <div class="art2">
         <form action="{{ url_for('addComment', collection_id=collection_id, article_id=article_id) }}" method=post>
         
@@ -12,6 +12,6 @@
            <button class="citem submit"  type=submit  class="submit" >add </button>
         </form>
       </div>
-
+</div>
 
 {% endblock %}

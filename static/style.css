@@ -23,6 +23,7 @@ a{
 .header{
     color: darkslategray;
     text-transform: capitalize;
+    font-size: -webkit-xxx-large;
 }
 .submit{
     color: darkslategray;
@@ -42,7 +43,7 @@ a{
     
     display: block;
     block-size: inherit;
-
+    font-size: 2vw;
     height: 95%;
     margin: 5pt;
 
